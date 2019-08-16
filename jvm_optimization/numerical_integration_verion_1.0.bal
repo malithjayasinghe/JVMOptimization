@@ -6,13 +6,13 @@ public function main() returns error?{
     string dstFileName ="response_time.txt";
     float sumArea = 0.0;
     int startTime1 = time:nanoTime();
-    int numRuns = 10000;
+    int numRuns = 1;
 
 
     foreach var i in 1..<numRuns{
         float x0 = 0;
-        float xn = 100;
-        int n = 1000;
+        float xn = 10000;
+        int n = 100000;
         sumArea = sumArea + trapezoidal(x0, xn, n);
      }
 
