@@ -1,18 +1,19 @@
 import subprocess
 import os
 import sys
-import numpy as np
-from scipy.stats import norm
-import numpy as np
-from scipy import stats
-import matplotlib.pyplot as plt
 from matplotlib import pylab as plt
 import statsmodels.api as sm
 
 sys.path.append('/Users/malithjayasinghe/JVMOptimization')
 from bayes_opt import BayesianOptimization
 execution_times_opt = []
+warm_up = 20
+count = 0
+num_iterations  = 50
+from scipy.stats import shapiro
+
 def get_execution_time(x):
+    global count
     os.environ["JAVA_OPTS"] = "-XX:NewRatio="+str(int(x))
     p = subprocess.Popen("/Users/malithjayasinghe/JVMOptimization/jvm_optimization/run_integration", shell=True, stdout=subprocess.PIPE)
     for line in p.stdout:
@@ -21,14 +22,18 @@ def get_execution_time(x):
     print (p.returncode)
     f = open("response_time.txt", "r")
     run_time = -1*float(f.readline())
+
     print("run time " + str(run_time) + "X = "+ str(int(x)))
-    execution_times_opt.append(run_time*-1.0)
+    if count > warm_up:
+        execution_times_opt.append(run_time*-1.0)
+
+    count = count + 1
     return run_time;
 
 
 #from pyqt_fit import kde
 execution_times = []
-for x in range(500):
+for x in range(num_iterations):
     p = subprocess.Popen("/Users/malithjayasinghe/JVMOptimization/jvm_optimization/run_integration", shell=True, stdout=subprocess.PIPE)
     for line in p.stdout:
         print(line)
@@ -57,7 +62,7 @@ optimizer = BayesianOptimization(
 
 optimizer.maximize(
     init_points=1,
-    n_iter=500,
+    n_iter=num_iterations,
 )
 
 kde2 = sm.nonparametric.KDEUnivariate(execution_times_opt)

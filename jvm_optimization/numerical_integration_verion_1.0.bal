@@ -3,26 +3,24 @@ import ballerina/time;
 import ballerina/log;
 
 public function main() returns error?{
-    string dstFileName ="response_time.txt";
-    float sumArea = 0.0;
-    int startTime1 = time:nanoTime();
-    int numRuns = 1;
 
+     string dstFileName ="response_time.txt";
+     float sumArea = 0.0;
+     int startTime1 = time:nanoTime();
 
-    foreach var i in 1..<numRuns{
-        float x0 = 0;
-        float xn = 10000;
-        int n = 100000;
-        sumArea = sumArea + trapezoidal(x0, xn, n);
-     }
+     float x0 = 0;
+     float xn = 10000;
+     int n = 100000;
+     float area = trapezoidal(x0, xn, n);
 
      int endTime = time:nanoTime();
+     io:println("area = " area);
      anydata runTime = ((endTime - startTime1)/(1000000.00));
-     //io:WritableByteChannel writableFileResult = check io:openWritableFile(dstFileName,true);
      io:WritableByteChannel writableFileResult = check io:openWritableFile(dstFileName);
      io:WritableCharacterChannel destinationChannel = new(writableFileResult, "UTF-8");
      var  writeCharResult1 = check destinationChannel.write(runTime.toString(), 0);
      var cr = destinationChannel.close();
+
       if (cr is error) {
              log:printError("Error occured while closing the channel: ", err = cr);
      }
